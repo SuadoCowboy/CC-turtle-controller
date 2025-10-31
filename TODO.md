@@ -1,0 +1,4 @@
+- place code in github/pastebin
+- shell autocompletion
+- tasks system(global i.e. not a module): every action is added to it as a task and is handled in a loop. This way it's possible to inspect all tasks that are being executed and it will also be possible to interrupt them
+- get turtle data command(returns a table with huge amount of data)

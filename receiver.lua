@@ -1,3 +1,8 @@
+local monitor = peripheral.find("monitor")
+if monitor then
+	term.redirect(monitor)
+end
+
 print('Receiver started')
 
 while true do

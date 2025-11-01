@@ -1,6 +1,6 @@
 local args = {...}
 
-local function getReceiverLog()
+local function _getReceiverLog()
 	local _, id, data = os.pullEvent('receiver_log')
 
 	if type(data) == 'string' then
@@ -17,20 +17,18 @@ local function getReceiverLog()
 			printError('Received table from ' .. id .. ', but data.type is nil')
 
 		elseif data.type == 'log' then
-			if data.isError then
-				local originalTextColor = term.getTextColor()
-				term.setTextColor(colours.red)
-
-				io.write('<' .. id .. '> ' .. data.text)
-				term.setTextColor(originalTextColor)
-
-			else
-				io.write('<' .. id .. '> ' .. data.text)
+			local originalTextColor = term.getTextColor()
+			if data.color then
+				term.setTextColor(data.color)
 			end
+
+			io.write('<' .. id .. '> ' .. data.text)
 
 			if data.text:sub(#data.text, #data.text) ~= '\n' then
 				io.write('\n')
 			end
+
+			term.setTextColor(originalTextColor)
 
 		else
 			printError('Received unknown data type from ' .. id)
@@ -38,8 +36,19 @@ local function getReceiverLog()
 	end
 end
 
+local timeouted = false
 local function timeout()
 	os.sleep(2)
+	timeouted = true
+end
+
+local function getReceiverLog()
+	while true do
+		parallel.waitForAny(_getReceiverLog, timeout)
+		if timeouted then
+			break
+		end
+	end
 end
 
 if #args < 2 then
@@ -54,5 +63,5 @@ else
 	end
 
 	rednet.send(tonumber(args[1]), data, 'command_handler')
-	parallel.waitForAny(getReceiverLog, timeout)
+	getReceiverLog()
 end

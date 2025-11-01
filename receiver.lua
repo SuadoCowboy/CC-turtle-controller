@@ -22,20 +22,18 @@ while true do
 			printError('Received table from ' .. id .. ', but data.type is nil')
 
 		elseif data.type == 'log' then
-			if data.isError then
-				local originalTextColor = term.getTextColor()
-				term.setTextColor(colours.red)
-
-				io.write('<' .. id .. '> ' .. data.text)
-				term.setTextColor(originalTextColor)
-
-			else
-				io.write('<' .. id .. '> ' .. data.text)
+			local originalTextColor = term.getTextColor()
+			if data.color then
+				term.setTextColor(data.color)
 			end
+
+			io.write('<' .. id .. '> ' .. data.text)
 
 			if data.text:sub(#data.text, #data.text) ~= '\n' then
 				io.write('\n')
 			end
+
+			term.setTextColor(originalTextColor)
 
 		else
 			printError('Received unknown data type from ' .. id)
